@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e0e14" />
+  <meta name="description" content="Bloc de notas creativo para poetas y compositores" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Infiniversal" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Infiniversal</title>
+</head>
+<body class="theme-dark">
+
+  <!-- ══════════════════════════════════════
+       TUTORIAL — primera ejecución
+  ══════════════════════════════════════ -->
+  <div id="tutorial-overlay" class="overlay hidden">
+    <div class="tutorial-card">
+      <div class="tutorial-steps">
+        <div class="tutorial-step active" data-step="1">
+          <div class="tutorial-icon">✦</div>
+          <h2>Bienvenido a<br><span class="brand-name">Infiniversal</span></h2>
+          <p>Tu espacio creativo para poesía y letras de canciones. Offline, elegante y siempre contigo.</p>
+        </div>
+        <div class="tutorial-step" data-step="2">
+          <div class="tutorial-icon">◈</div>
+          <h2>Crea y organiza</h2>
+          <p>Escribe poemas con estructura guiada o compón canciones con secciones marcadas.</p>
+        </div>
+        <div class="tutorial-step" data-step="3">
+          <div class="tutorial-icon">◉</div>
+          <h2>Herramientas para escritores</h2>
+          <p>Contador de sílabas siempre activo, deshacer/rehacer, zoom de texto y tema claro/oscuro.</p>
+        </div>
+        <div class="tutorial-step" data-step="4">
+          <div class="tutorial-icon">⬡</div>
+          <h2>Todo offline</h2>
+          <p>Tus notas se guardan localmente. Sin internet. Sin límites. Solo tú y tus palabras.</p>
+        </div>
+      </div>
+      <div class="tutorial-dots">
+        <span class="dot active" data-dot="1"></span>
+        <span class="dot" data-dot="2"></span>
+        <span class="dot" data-dot="3"></span>
+        <span class="dot" data-dot="4"></span>
+      </div>
+      <div class="tutorial-actions">
+        <button id="tutorial-prev" class="btn-ghost hidden">Anterior</button>
+        <button id="tutorial-next" class="btn-primary">Siguiente</button>
+        <button id="tutorial-skip" class="btn-link">Saltar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PROMPT DE INSTALACIÓN PWA
+  ══════════════════════════════════════ -->
+  <div id="install-prompt" class="overlay hidden">
+    <div class="install-card">
+      <button id="install-close" class="btn-icon-close" aria-label="Cerrar">✕</button>
+      <div class="install-logo">∞</div>
+      <h2>Instala <span class="brand-name">Infiniversal</span></h2>
+      <p>Añade la app a tu pantalla de inicio para acceder más rápido y usarla sin conexión.</p>
+      <p id="ios-hint" class="ios-hint hidden">
+        En Safari: pulsa <strong>Compartir</strong> (barra inferior) y luego <strong>"Añadir a pantalla de inicio"</strong>.
+      </p>
+      <div class="install-actions">
+        <button id="install-accept" class="btn-primary">Instalar ahora</button>
+        <button id="install-dismiss" class="btn-ghost">Ahora no</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: TIPO DE NOTA
+  ══════════════════════════════════════ -->
+  <div id="type-modal" class="overlay hidden">
+    <div class="modal-card">
+      <h2>Nueva nota</h2>
+      <p class="modal-subtitle">¿Qué vas a crear hoy?</p>
+      <div class="type-grid">
+        <button class="type-btn" data-type="poem">
+          <span class="type-icon">◎</span>
+          <span class="type-label">Poesía</span>
+          <span class="type-desc">Sonetos, cuartetos, liras...</span>
+        </button>
+        <button class="type-btn" data-type="song">
+          <span class="type-icon">♩</span>
+          <span class="type-label">Canción</span>
+          <span class="type-desc">Verso, estribillo, puente...</span>
+        </button>
+      </div>
+      <button id="type-cancel" class="btn-link">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: ESTRUCTURA POÉTICA
+  ══════════════════════════════════════ -->
+  <div id="poem-structure-modal" class="overlay hidden">
+    <div class="modal-card">
+      <h2>Estructura poética</h2>
+      <p class="modal-subtitle">Elige la forma de tu poema</p>
+      <div class="structure-list">
+        <button class="structure-btn" data-structure="soneto">
+          <strong>Soneto</strong>
+          <span>2 cuartetos + 2 tercetos · 14 versos</span>
+        </button>
+        <button class="structure-btn" data-structure="cuarteto">
+          <strong>Cuarteto</strong>
+          <span>4 versos · rima ABBA</span>
+        </button>
+        <button class="structure-btn" data-structure="lira">
+          <strong>Lira</strong>
+          <span>5 versos · heptasílabos y endecasílabos</span>
+        </button>
+        <button class="structure-btn" data-structure="haiku">
+          <strong>Haiku</strong>
+          <span>3 versos · 5-7-5 sílabas</span>
+        </button>
+        <button class="structure-btn" data-structure="silva">
+          <strong>Silva</strong>
+          <span>Versos heptasílabos y endecasílabos libres</span>
+        </button>
+        <button class="structure-btn" data-structure="libre">
+          <strong>Verso libre</strong>
+          <span>Sin estructura fija · libertad total</span>
+        </button>
+      </div>
+      <button id="poem-structure-back" class="btn-link">← Volver</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: AJUSTES
+  ══════════════════════════════════════ -->
+  <div id="settings-modal" class="overlay hidden">
+    <div class="modal-card settings-card">
+      <div class="modal-header">
+        <h2>Ajustes</h2>
+        <button id="settings-close" class="btn-icon-close">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Apariencia</h3>
+        <div class="setting-row">
+          <label>Tema</label>
+          <div class="theme-toggle-group">
+            <button class="theme-opt active" data-theme="dark">Oscuro</button>
+            <button class="theme-opt" data-theme="light">Claro</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label>Tamaño de texto</label>
+          <div class="zoom-controls">
+            <button id="zoom-out" class="btn-icon">−</button>
+            <span id="zoom-label">100%</span>
+            <button id="zoom-in" class="btn-icon">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Editor</h3>
+        <div class="setting-row">
+          <label>Formato de texto (negrita, cursiva...)</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-rich" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <label>Herramientas de métrica y ritmo</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-metric" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Instalar app</h3>
+        <div id="install-state-native" class="install-state hidden">
+          <p class="settings-about">Instala Infiniversal en tu pantalla de inicio.</p>
+          <button id="btn-install-settings" class="btn-primary" style="margin-top:10px">Instalar Infiniversal</button>
+        </div>
+        <div id="install-state-ios" class="install-state hidden">
+          <p class="settings-about">En Safari: pulsa <strong style="color:var(--accent)">Compartir</strong> y luego <strong style="color:var(--accent)">"Añadir a pantalla de inicio"</strong>.</p>
+        </div>
+        <div id="install-state-done" class="install-state hidden">
+          <p class="settings-about">✓ Infiniversal ya está instalada.</p>
+        </div>
+        <div id="install-state-unsupported" class="install-state hidden">
+          <p class="settings-about">Usa Chrome o Edge en Android/PC, o Safari en iOS.</p>
+        </div>
+        <div id="install-state-waiting" class="install-state">
+          <p class="settings-about">Preparando instalación... Vuelve a abrir Ajustes en unos segundos.</p>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Acerca de</h3>
+        <p class="settings-about">Infiniversal v1.0 · Offline · Hecho con amor por poetas para poetas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: AYUDA
+  ══════════════════════════════════════ -->
+  <div id="help-modal" class="overlay hidden">
+    <div class="modal-card help-card">
+      <div class="modal-header">
+        <h2>Ayuda</h2>
+        <button id="help-close" class="btn-icon-close">✕</button>
+      </div>
+      <div class="help-content">
+        <div class="help-section">
+          <h4>✦ Crear una nota</h4>
+          <p>Pulsa el botón <strong>+</strong> para crear una nueva nota. Elige entre Poesía o Canción.</p>
+        </div>
+        <div class="help-section">
+          <h4>◎ Estructura de poesía</h4>
+          <p>El soneto guía 14 versos en 4 estrofas. El haiku muestra las sílabas objetivo 5-7-5.</p>
+        </div>
+        <div class="help-section">
+          <h4>♩ Estructura de canción</h4>
+          <p>Usa los botones de sección (Intro, Verso, Pre-estribillo, Estribillo, Puente, Outro) para marcar tu letra.</p>
+        </div>
+        <div class="help-section">
+          <h4>◉ Contador de sílabas</h4>
+          <p>Siempre activo. Selecciona cualquier verso para ver sus sílabas. Activa "Métrica" en Ajustes para ver el nombre del verso.</p>
+        </div>
+        <div class="help-section">
+          <h4>⬡ Organización</h4>
+          <p>Añade tags a tus notas y márcalas como favoritas con la estrella. Filtra desde la pantalla principal.</p>
+        </div>
+        <div class="help-section">
+          <h4>↗ Compartir</h4>
+          <p>Botón de compartir en cada nota: copia al portapapeles, descarga TXT o imprime como PDF.</p>
+        </div>
+        <div class="help-section">
+          <h4>⊠ Eliminar</h4>
+          <p>Pulsa el botón de eliminar dentro de la nota. Se pedirá confirmación antes de borrar.</p>
+        </div>
+        <div class="help-section">
+          <h4>◌ Instalar la app</h4>
+          <p>Aparece un banner en la pantalla principal. También desde Ajustes → "Instalar app".</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: COMPARTIR
+  ══════════════════════════════════════ -->
+  <div id="share-modal" class="overlay hidden">
+    <div class="modal-card share-card">
+      <div class="modal-header">
+        <h2>Compartir nota</h2>
+        <button id="share-close" class="btn-icon-close">✕</button>
+      </div>
+      <div class="share-actions">
+        <button id="share-clipboard" class="share-btn">
+          <span class="share-btn-icon">⊕</span> Copiar al portapapeles
+        </button>
+        <button id="share-txt" class="share-btn">
+          <span class="share-btn-icon">↓</span> Descargar como TXT
+        </button>
+        <button id="share-pdf" class="share-btn">
+          <span class="share-btn-icon">◻</span> Imprimir / PDF
+        </button>
+      </div>
+      <div id="share-toast" class="share-toast hidden">Copiado al portapapeles</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: TAGS
+  ══════════════════════════════════════ -->
+  <div id="tag-modal" class="overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Gestionar tags</h2>
+        <button id="tag-close" class="btn-icon-close">✕</button>
+      </div>
+      <div class="tag-input-row">
+        <input type="text" id="tag-input" placeholder="Nuevo tag..." class="text-input" />
+        <button id="tag-add" class="btn-primary small">Añadir</button>
+      </div>
+      <div id="tag-list" class="tag-list"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       MODAL: CONFIRMAR ELIMINACIÓN
+  ══════════════════════════════════════ -->
+  <div id="delete-modal" class="overlay hidden">
+    <div class="modal-card delete-card">
+      <div class="delete-icon">⊠</div>
+      <h2>Eliminar nota</h2>
+      <p class="modal-subtitle">Esta acción no se puede deshacer. ¿Seguro que quieres eliminarla?</p>
+      <div class="delete-actions">
+        <button id="delete-confirm" class="btn-danger">Sí, eliminar</button>
+        <button id="delete-cancel" class="btn-ghost">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       APP PRINCIPAL
+  ══════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- VISTA: LISTA DE NOTAS -->
+    <div id="view-list" class="view">
+      <header class="app-header">
+        <div class="header-brand">
+          <span class="brand-symbol">∞</span>
+          <h1>Infiniversal</h1>
+        </div>
+        <div class="header-actions">
+          <button id="btn-help" class="btn-icon" aria-label="Ayuda">?</button>
+          <button id="btn-settings" class="btn-icon" aria-label="Ajustes">⚙</button>
+        </div>
+      </header>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">Todas</button>
+        <button class="filter-btn" data-filter="poem">Poesía</button>
+        <button class="filter-btn" data-filter="song">Canciones</button>
+        <button class="filter-btn" data-filter="fav">Favoritas</button>
+        <button class="filter-btn" data-filter="tags" id="filter-tags-btn">Tags ▾</button>
+      </div>
+
+      <div id="active-tags-bar" class="active-tags-bar hidden"></div>
+
+      <!-- Banner de instalación — siempre visible si no está instalada -->
+      <div id="install-banner" class="install-banner hidden">
+        <div class="install-banner-content">
+          <span class="install-banner-icon">∞</span>
+          <div class="install-banner-text">
+            <strong>Instalar Infiniversal</strong>
+            <span id="install-banner-sub">Añadir a pantalla de inicio</span>
+          </div>
+        </div>
+        <div class="install-banner-actions">
+          <button id="install-banner-btn" class="install-banner-cta">Instalar</button>
+          <button id="install-banner-close" class="install-banner-dismiss">✕</button>
+        </div>
+      </div>
+
+      <main id="notes-list" class="notes-list">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-symbol">✦</div>
+          <p>Tu lienzo está vacío.<br>Crea tu primera nota.</p>
+        </div>
+      </main>
+
+      <button id="btn-new" class="fab" aria-label="Nueva nota">+</button>
+    </div>
+
+    <!-- VISTA: EDITOR -->
+    <div id="view-editor" class="view hidden">
+      <header class="editor-header">
+        <button id="btn-back" class="btn-icon" aria-label="Volver">←</button>
+        <div class="editor-header-center">
+          <span id="editor-type-badge" class="type-badge"></span>
+        </div>
+        <div class="editor-header-actions">
+          <button id="btn-fav"    class="btn-icon" aria-label="Favorito">☆</button>
+          <button id="btn-tags"   class="btn-icon" aria-label="Tags">◈</button>
+          <button id="btn-share"  class="btn-icon" aria-label="Compartir">↗</button>
+          <button id="btn-delete" class="btn-icon btn-icon-danger" aria-label="Eliminar">⊠</button>
+        </div>
+      </header>
+
+      <div id="song-toolbar" class="song-toolbar hidden">
+        <button class="section-btn" data-section="Intro">Intro</button>
+        <button class="section-btn" data-section="Verso">Verso</button>
+        <button class="section-btn" data-section="Pre-estribillo">Pre-est.</button>
+        <button class="section-btn" data-section="Estribillo">Estribillo</button>
+        <button class="section-btn" data-section="Puente">Puente</button>
+        <button class="section-btn" data-section="Outro">Outro</button>
+      </div>
+
+      <div id="poem-guide" class="poem-guide hidden"></div>
+
+      <div id="rich-toolbar" class="rich-toolbar hidden">
+        <button class="fmt-btn" data-cmd="bold"><strong>N</strong></button>
+        <button class="fmt-btn" data-cmd="italic"><em>K</em></button>
+        <button class="fmt-btn" data-cmd="underline"><u>S</u></button>
+        <button class="fmt-btn" data-cmd="undo">↩</button>
+        <button class="fmt-btn" data-cmd="redo">↪</button>
+      </div>
+
+      <div id="metric-toolbar" class="metric-toolbar hidden">
+        <span class="metric-label">Métrica:</span>
+        <span id="metric-syllables" class="metric-value">— síl.</span>
+        <span class="metric-sep">·</span>
+        <span class="metric-label">Verso:</span>
+        <span id="metric-type" class="metric-value">—</span>
+      </div>
+
+      <input type="text" id="note-title" class="note-title-input" placeholder="Título..." />
+      <div id="note-tags-bar" class="note-tags-bar"></div>
+
+      <div id="note-editor"
+           class="note-editor"
+           contenteditable="true"
+           spellcheck="true"
+           aria-multiline="true"
+           aria-label="Editor de nota"
+           data-placeholder="Comienza a escribir..."></div>
+
+      <div class="editor-stats">
+        <span id="stat-words">0 palabras</span>
+        <span class="stat-sep">·</span>
+        <span id="stat-syllables">0 síl.</span>
+        <span class="stat-sep">·</span>
+        <span id="stat-chars">0 car.</span>
+      </div>
+
+      <div id="plain-undo-bar" class="plain-undo-bar">
+        <button id="btn-undo" class="btn-ghost small">↩ Deshacer</button>
+        <button id="btn-redo" class="btn-ghost small">↪ Rehacer</button>
+      </div>
+    </div>
+
+  </div><!-- /#app -->
+
+  <script src="app.js"></script>
+</body>
+</html>
